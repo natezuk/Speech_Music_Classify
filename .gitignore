@@ -1,0 +1,8 @@
+# Ignore temporary files
+*~
+
+# Ignore latex files
+*.aux
+*.log
+*.pdf
+*.gz
