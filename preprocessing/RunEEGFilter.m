@@ -52,9 +52,8 @@ fulleeg = rmfltartifact(fulleeg,eFs);
 disp('Splicing the EEG signal...');
 stimcodes = 1:40;
 [EEG,trig,stim] = splicebdf(fulleeg,fulltrigs,stimcodes,256,eFs);
+
+% Show the variance of the eeg
+v = var(fulleeg);
 % EEG{1} = fulleeg;
 clear fulleeg
-
-% Setup artifact and interpolation storage arrays
-ARTFCT = cell(length(EEG),1);
-INTRPCH = cell(length(EEG),1);
