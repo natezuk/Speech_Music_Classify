@@ -6,7 +6,7 @@ addpath('C:\Users\nzuk\Projects\Speech_Music_Classify\');
 
 eegpth = 'A:\SpeechMusicClassify\eegs\'; % contains eeg data
 stimpth = 'A:\SpeechMusicClassify\stims\'; % contains labeling for the sound clips and the stimuli
-sbj = 'HGWLOI'; % subject name
+sbj = 'TUZEZT'; % subject name
 vexpthres = 95;
 eFs = 128;
 % maxdur = 1; % maximum duration (in s)
