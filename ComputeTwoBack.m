@@ -2,7 +2,7 @@
 % stimulus
 % Nate Zuk (2018)
 
-orderdir = 'A:\SpeechMusicClassify\stim_order\';
+orderdir = '/Volumes/Untitled/SpeechMusicClassify/stim_order/';
 nclips = 60;
 nstim = 40;
 nback = 2; % # for #-back repeats

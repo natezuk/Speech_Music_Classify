@@ -16,7 +16,7 @@ resdir = '/Volumes/ZStore/SpeechMusicClassify/';
 fls = what(resdir);
 mats = fls.mat; % subject results
 for m = 1:length(mats)
-    if strcmp(mats{m}(1:13),'StimClassLDA_') % make sure it's the appropriate results file
+    if strcmp(mats{m}(1:18),'StimClassAvgChans_') % make sure it's the appropriate results file
         r = load([resdir mats{m}]); % load the results file
         sbjs{m} = mats{m}(14:end); % get the subject tag
         conf = mean(r.conf,3); % average the confusion matrix across iterations

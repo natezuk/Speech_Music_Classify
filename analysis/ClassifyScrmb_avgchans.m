@@ -29,7 +29,9 @@ end
 disp('Reshaping the eeg array...');
 dims = size(eegs);
 ntm = dims(1); nchan = dims(2); ntr = dims(3); nstims = dims(4);
-rshpeeg = reshape(eegs,[ntm*nchan ntr*nstims]);
+% average the EEG channels, so the discrimination is done only by time
+eegs = mean(eegs,2);
+rshpeeg = reshape(eegs,[ntm ntr*nstims]);
 lbl = repelem(1:nstims,ntr);
 scrmblbls;
 % lbl = repelem(typelbl,ntr);
@@ -54,5 +56,5 @@ ylabel('Predicted');
 % Save the results
 disp('Saving results...');
 respth = '/Volumes/ZStore/SpeechMusicClassify/';
-resfl = sprintf('StimClassLDA_%s',sbj);
+resfl = sprintf('StimClassAvgChans_%s',sbj);
 save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres');
