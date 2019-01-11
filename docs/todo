@@ -1,0 +1,5 @@
+Todo:
+
+- Use multidimensional scaling to identify dimensions that best separate the means of the different classes -- how is it best separated?
+- Look at time-by-time or channel-by-channel classification accuracies -- where is the classification accuracy largest?
+- What are the unique patterns of responses? (I think I will have to at least address this question if I want to argue that these results can only be explained by unique responses for speech and music)

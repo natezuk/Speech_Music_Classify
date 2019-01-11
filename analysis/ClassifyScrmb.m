@@ -55,4 +55,4 @@ ylabel('Predicted');
 disp('Saving results...');
 respth = '/Volumes/ZStore/SpeechMusicClassify/';
 resfl = sprintf('StimClassLDA_%s',sbj);
-save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres');
+save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres','cf');

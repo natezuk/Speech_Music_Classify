@@ -1,0 +1,51 @@
+\documentclass[11pt]{article}
+\usepackage{parskip}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{ {./figs/} }
+
+\title{
+    EEG-based classification of natural sounds reveals distinct spatiotemporal responses to speech and music \\
+    Overview
+}
+\author{Nathaniel Zuk}
+
+\begin{document}
+\maketitle
+
+\textbf{Overview:}
+
+Our brain can quickly identify different types of sounds, even when they are a couple of seconds long.  Prior work with fMRI demonstrated that neural activity in the auditory cortex captures basic acoustic dimensions of the sounds, such as pitchiness or the height of the pitch, which are relevant for identifying these sounds.  Moreover, there appeared to be regions of secondary auditory cortex that were especially responsive to speech sounds and music sounds, suggesting speech and music specialization in the cortex.  
+
+Here, we demonstrate that these unique specializations are observable with EEG.  Specifically, speech, music, and impact sounds are classified best of the 30 natural sounds tested.  When these sounds were then scrambled so that they had the same low-level statistics, the scrambled impact sounds were classified just as well as the originals.  In contrast, the scrambled speech and music sounds were classified worse than their originals, suggesting that the specialized neural activity for speech and music represents a high-level process, beyond the processing of low-level acoustics.  After averaging the activity across all channels, thereby destroying spatial information, the pattern of classification accuracies persists, suggesting that the activity is both spatially and temporally unique.
+
+% Figure, natural sound confusion matrix, example subject
+\begin{figure}[H]
+\includegraphics[width=12cm]{JOS_confmatrix}
+\centering
+\end{figure}
+
+% Figure, natural sound classification rankings
+\begin{figure}[H]
+\includegraphics[width=10cm]{TeohStimClass_6sbj}
+\centering
+\end{figure}
+
+% Figure, original / scrambled sound rankings
+\begin{figure}[H]
+\includegraphics[width=10cm]{TotSpMusClassify_7sbj}
+\centering
+\end{figure}
+
+% Figure, original / scrambled, averaged channels
+\begin{figure}[H]
+\includegraphics[width=10cm]{TotSpMusClassify_avgchans_7sbj}
+\centering
+\end{figure}
+
+\hrulefill
+
+\textcolor{red}{What is the spatiotemporal activity necessary to produce these unique classifications?  Is there a way of telling which is a "speech" response and which is a "music" response?  They might not be discriminable as "speech" and "music" classes (Teoh's analysis), but perhaps there are unique properties to those responses?}
+
+\end{document}
