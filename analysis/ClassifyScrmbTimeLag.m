@@ -4,11 +4,11 @@
 % to identify which time lags produce the largest classification
 % accuracies.
 % (NZ, 4/12/2018)
-addpath('C:\Users\nzuk\Projects\Speech_Music_Classify\');
+addpath('~/Projects/Speech_Music_Classify/');
 
-eegpth = 'A:\SpeechMusicClassify\eegs\'; % contains eeg data
-stimpth = 'A:\SpeechMusicClassify\stims\'; % contains labeling for the sound clips and the stimuli
-sbj = 'EFFEUS'; % subject name
+eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/'; % contains eeg data
+stimpth = '/Volumes/Untitled/SpeechMusicClassify/stims/'; % contains labeling for the sound clips and the stimuli
+sbj = 'GQEVXE'; % subject name
 vexpthres = 95;
 eFs = 128;
 trange = 200; % range of times to include in the classifier (in ms)
@@ -37,9 +37,10 @@ lbl = repelem(1:nstims,ntr);
 scrmblbls;
 types = unique(typelbl);
 
+mn_conf = NaN(nstims,nstims,length(t_iter));
 corr = cell(length(t_iter),1);
 cf = cell(length(t_iter),1);
-sc = cell(length(t_iter),1);
+% sc = cell(length(t_iter),1);
 maxpc = cell(length(t_iter),1);
 mu = cell(length(t_iter),1);
 for n = 1:length(t_iter),
@@ -54,26 +55,39 @@ for n = 1:length(t_iter),
     rshpeeg = reshape(segeeg,[length(tidx)*nchan ntr*nstims]);
 
     % Do multi-class LDA
-    [conf,cf{n},sc{n},maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
-    corr{n} = diag(mean(conf,3)); % proportion correct classification
+    [conf,cf{n},~,maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
+    mn_conf(:,:,n) = mean(conf,3);
+    corr{n} = diag(mn_conf(:,:,n)); % proportion correct classification
 end
+corr = cell2mat(corr'); % convert corr to matrix
 
 % Sort the stimulus types
 [srttype,idx] = sort(typelbl);
 
-meancorr = NaN(length(t_iter),6);
-stdcorr = NaN(length(t_iter),6);
-for ii = 1:6, % go through each time of stimulus
-    meancorr(:,ii) = cellfun(@(x) mean(x(srttype==ii)),corr); % get the average correct response rate
-    stdcorr(:,ii) = cellfun(@(x) std(x(srttype==ii)),corr); % get the standard deviation across responses
-end
+% meancorr = NaN(length(t_iter),6);
+% stdcorr = NaN(length(t_iter),6);
+% for ii = 1:6, % go through each time of stimulus
+%     meancorr(:,ii) = cellfun(@(x) mean(x(srttype==ii)),corr); % get the average correct response rate
+%     stdcorr(:,ii) = cellfun(@(x) std(x(srttype==ii)),corr); % get the standard deviation across responses
+% end
+% figure
+% errorbar(t_iter'*ones(1,6),meancorr,stdcorr);
+lbls = {'music','speech','impact','synth music','synth speech','synth impact'};
 figure
-errorbar(t_iter'*ones(1,6),meancorr,stdcorr);
+hold on
+cmap = colormap('jet');
+tmacc_plt = NaN(6,1);
+for ii = 1:6,
+    clr_idx = floor((ii-1)/6*64)+1; % index for color plotting
+    plt_handles = plot(t_iter,corr(srttype==ii,:),'Color',cmap(clr_idx,:));
+    tmacc_plt(ii) = plt_handles(1);
+end
 xlabel('Time (s)');
 ylabel('Average proportion correct');
+legend(tmacc_plt,lbls);
 
 % Save the results
 disp('Saving results...');
-respth = 'C:\Users\nzuk\Data\SpeechMusicClassify\';
+respth = '/Volumes/ZStore/SpeechMusicClassify/timelag/';
 resfl = sprintf('StimClassLDA_timelag_%s',sbj);
-save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres','t_iter','trange');
+save([respth resfl],'mn_conf','maxpc','mu','lbl','vexpthres','t_iter','trange');

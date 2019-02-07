@@ -43,6 +43,7 @@ types = unique(typelbl);
 
 mconf = mean(conf,3); % average confusion matrix across iterations
 figure
+colormap('gray');
 imagesc(mconf(idx,idx)');
 colorbar
 set(gca,'XTick',1:30,'XTickLabel',stims(idx),'YTick',1:30,'YTickLabel',stims(idx),...
@@ -52,7 +53,7 @@ xlabel('Actual');
 ylabel('Predicted');
 
 % Save the results
-disp('Saving results...');
-respth = '/Volumes/ZStore/SpeechMusicClassify/';
-resfl = sprintf('StimClassLDA_%s',sbj);
-save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres','cf');
+% disp('Saving results...');
+% respth = '/Volumes/ZStore/SpeechMusicClassify/';
+% resfl = sprintf('StimClassLDA_%s',sbj);
+% save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres','cf');

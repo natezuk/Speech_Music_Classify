@@ -20,7 +20,7 @@ for ii = 1:nstim,
     detrep = clip_order(nback+1:end,ii)==clip_order(1:end-nback,ii);
     num_twoback(ii) = sum(detrep);
     % Identify which clips were targets, and tag those repeats
-    target_clips = clip_order(find(detrep)+2);
+    target_clips = clip_order(find(detrep)+2,ii);
     tag_cliprep(target_clips,ii) = true;
     % Display the result
     fprintf('%s: %d repeats\n',flnm,num_twoback(ii));

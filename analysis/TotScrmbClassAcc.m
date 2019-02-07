@@ -1,8 +1,8 @@
 % Rank the classification accuracies for each subject and determine if
 % there is a significant difference between them
-% addpath('C:\Users\nzuk\Projects\ITDSweep\PsychPhys_fullresults\Analysis\');
+
 nsbj = 7;
-fl_prefix = 'StimClassLDA_avgchans_';
+fl_prefix = 'StimClassLDA_';
 
 % Load the stimulus labels
 scrmblbls;
@@ -34,7 +34,7 @@ end
 
 % Run a kruskal wallis test, significant differences between stimulus
 % types?
-typenms = {'Music','Speech','Onset','Synth Music','Synth Speech','Synth Onset'};
+typenms = {'Music','Speech','Impact','Scrambled Music','Scrambled Speech','Scrambled Impact'};
 reptype = repmat(typelbl,[1 nsbj]);
 reptype = reshape(reptype,[numel(reptype) 1]);
 RNK = reshape(mrnk,[numel(reptype) 1]);
@@ -44,3 +44,23 @@ ylabel('Average classification accuracy ranking');
 % [pMW,MW] = mannwhitneycmp(RNK,reptype);
 figure
 cmp = multcompare(stats);
+
+% Use a dot-median plot to show the classification ranks
+newlbl = NaN(length(typelbl),1); % use a new labeling that puts original next to scrambled
+newlblvals = [1 3 5 2 4 6];
+for ii = 1:length(typenms),
+    typeidx = typelbl==ii;
+    newlbl(typeidx) = newlblvals(ii);
+end
+dot_median_plot(newlbl,mrnk);
+[~,newnmidx] = sort(newlblvals);
+set(gca,'XTickLabel',typenms(newnmidx),'XTickLabelRotation',45);
+ylabel('Classification ranking');
+
+% Determine if the rankings for speech are significantly reduced in the
+% scrambled version
+prs = NaN(3,1);
+strs = cell(3,1);
+for ii = 1:3,
+    [prs(ii),~,strs{ii}] = ranksum(RNK(reptype==ii),RNK(reptype==ii+3));
+end
