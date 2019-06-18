@@ -8,11 +8,11 @@ addpath('~/Projects/Speech_Music_Classify/');
 
 eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/'; % contains eeg data
 stimpth = '/Volumes/Untitled/SpeechMusicClassify/stims/'; % contains labeling for the sound clips and the stimuli
-sbj = 'HITXMV'; % subject name
-vexpthres = 95;
+sbj = 'HGWLOI'; % subject name
+dopca = false;
 eFs = 128;
-trange = 200; % range of times to include in the classifier (in ms)
-tstep = 100; % step size between time ranges (in ms)
+trange = 1000/eFs; % range of times to include in the classifier (in ms)
+tstep = 1000/eFs; % step size between time ranges (in ms)
 
 disp('Loading eeg data...');
 [eegs,stims] = loadscrmbclassdata(eegpth,sbj,stimpth);
@@ -55,7 +55,9 @@ for n = 1:length(t_iter),
     rshpeeg = reshape(segeeg,[length(tidx)*nchan ntr*nstims]);
 
     % Do multi-class LDA
-    [conf,cf{n},~,maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
+%     [conf,cf{n},~,maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
+    [conf,~,~,~,mu{n}] = stimclasslda(rshpeeg,lbl,'dopca',dopca);
+    maxpc{n} = NaN;
     mn_conf(:,:,n) = mean(conf,3);
     corr{n} = diag(mn_conf(:,:,n)); % proportion correct classification
 end
@@ -88,6 +90,6 @@ legend(tmacc_plt,lbls);
 
 % Save the results
 disp('Saving results...');
-respth = '/Volumes/ZStore/SpeechMusicClassify/timelag/';
-resfl = sprintf('StimClassLDA_timelag_%s',sbj);
+respth = '/Volumes/ZStore/SpeechMusicClassify/shorttimelag/';
+resfl = sprintf('StimClassLDA_shorttimelag_%s',sbj);
 save([respth resfl],'mn_conf','maxpc','mu','lbl','vexpthres','t_iter','trange');

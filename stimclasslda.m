@@ -15,6 +15,7 @@ function [conf,cf,sc,pcind,mu] = stimclasslda(eegdata,lbl,varargin)
 % Initial variables
 niter = 100; % number of times to repeat classification and prediction
 vexpthres = 95; % retain PCA components that explain the data variance up to this threshold (in percent)
+dopca = true; % flag whether or not to do PCA
 
 % Parse varargin
 if ~isempty(varargin),
@@ -33,12 +34,18 @@ if ~isempty(nancols)
     warning(['Removed columns with NaNs: ' strrmvcols]);
 end
 
-disp('Doing PCA...');
-pcatm = tic;
-[cf,sc,~,~,vexp] = pca(eegdata');
-pcind = find(cumsum(vexp)>vexpthres,1,'first');
-fprintf('%d dimensions retained\n',pcind);
-disp(['PCA completed @ ' num2str(toc(pcatm)) ' s']);
+if dopca,
+    disp('Doing PCA...');
+    pcatm = tic;
+    [cf,sc,~,~,vexp] = pca(eegdata');
+    pcind = find(cumsum(vexp)>vexpthres,1,'first');
+    fprintf('%d dimensions retained\n',pcind);
+    disp(['PCA completed @ ' num2str(toc(pcatm)) ' s']);
+else
+    sc = eegdata';
+    pcind = size(eegdata,1);
+    cf = NaN;
+end
 
 nclass = length(unique(lbl)); % number of classes
 ntrn = round(0.75*length(lbl)); % number of trials to include for training

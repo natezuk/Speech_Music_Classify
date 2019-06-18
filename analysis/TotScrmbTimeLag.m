@@ -1,7 +1,7 @@
 % Rank the classification accuracies for each subject and determine if
 % there is a significant difference between them
 % addpath('C:\Users\nzuk\Projects\ITDSweep\PsychPhys_fullresults\Analysis\');
-nsbj = 7;
+nsbj = 10;
 fl_prefix = 'StimClassLDA_timelag_';
 
 % Load the stimulus labels

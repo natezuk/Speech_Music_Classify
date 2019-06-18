@@ -8,8 +8,9 @@ addpath('~/Projects/Speech_Music_Classify/');
 
 eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/'; % contains eeg data
 stimpth = '/Volumes/Untitled/SpeechMusicClassify/stims/'; % contains labeling for the sound clips and the stimuli
-sbj = 'HITXMV'; % subject name
+sbj = 'EFFEUS'; % subject name
 vexpthres = 95;
+dopca = true;
 eFs = 128;
 trange = 200; % range of times to include in the classifier (in ms)
 tstep = 100; % step size between time ranges (in ms)
@@ -46,7 +47,8 @@ mu = cell(length(t_iter),1);
 for n = 1:length(t_iter),
     fprintf('** Iteration %d/%d\n',n,length(t_iter));
     % Get a segment of the eeg within the time range
-    tidx = t_iter_idx(n)+(1:idx_range);
+    rmvidx = t_iter_idx(n)+(1:idx_range);
+    tidx = setxor(1:ntm,rmvidx); % remove the time segment
     segeeg = eegs(tidx,:,:,:);
     
     % Reshape the eegs into timeXchannels by trialsXstimuli for PCA and MDS
@@ -56,6 +58,7 @@ for n = 1:length(t_iter),
 
     % Do multi-class LDA
     [conf,cf{n},~,maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
+%     [conf,cf{n},~,maxpc{n},mu{n}] = stimclasslda(rshpeeg,lbl,'dopca',dopca);
     mn_conf(:,:,n) = mean(conf,3);
     corr{n} = diag(mn_conf(:,:,n)); % proportion correct classification
 end
@@ -88,6 +91,6 @@ legend(tmacc_plt,lbls);
 
 % Save the results
 disp('Saving results...');
-respth = '/Volumes/ZStore/SpeechMusicClassify/timelag/';
-resfl = sprintf('StimClassLDA_timelag_%s',sbj);
+respth = '/Volumes/ZStore/SpeechMusicClassify/removelag/';
+resfl = sprintf('StimClassLDA_removelag_%s',sbj);
 save([respth resfl],'mn_conf','maxpc','mu','lbl','vexpthres','t_iter','trange');

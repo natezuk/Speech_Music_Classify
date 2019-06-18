@@ -7,8 +7,8 @@ addpath(genpath('~/Documents/MATLAB/eeglab13_6_5b/functions'));
 
 eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/'; % contains eeg data
 stimpth = '/Volumes/Untitled/SpeechMusicClassify/stims/'; % contains labeling for the sound clips and the stimuli
-sbj = 'HITXMV'; % subject name
-vexpthres = 95;
+sbj = 'HGWLOI'; % subject name
+% vexpthres = 95;
 eFs = 128;
 % maxdur = 1; % maximum duration (in s)
 
@@ -37,7 +37,7 @@ scrmblbls;
 types = unique(typelbl);
 
 % Do multi-class LDA
-[conf,cf,sc,maxpc,mu] = stimclasslda(rshpeeg,lbl,'vexpthres',vexpthres);
+[conf,cf,sc,maxpc,mu] = stimclasslda(rshpeeg,lbl,'dopca',false);
 
 % Sort the stimulus types
 [srttype,idx] = sort(typelbl);
@@ -71,6 +71,6 @@ title('200 - 300 ms');
 
 % Save the results
 disp('Saving results...');
-respth = '/Volumes/ZStore/SpeechMusicClassify/';
-resfl = sprintf('StimClassLDA_%s',sbj);
+respth = '/Volumes/ZStore/SpeechMusicClassify/nopca/';
+resfl = sprintf('StimClassLDA_nopca_%s',sbj);
 save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres','cf');

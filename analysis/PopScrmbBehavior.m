@@ -38,3 +38,12 @@ plot([1 6],[median(ALL_FA) median(ALL_FA)],'r','LineWidth',2);
 plot([1 6],[chance_rate chance_rate],'k--','LineWidth',2);
 set(gca,'FontSize',16,'XTickLabel',typenms,'XTickLabelRotation',45);
 ylabel('Correct detection rate');
+
+% Is there a significant difference in hit rates across stimulus types?
+[pkw,~,stkw] = kruskalwallis(ALL_CORR,TYPE,'off');
+[pmw,mw,cond] = mannwhitneycmp(ALL_CORR,TYPE);
+h = fdr_bh(pmw,0.05);
+fprintf('Variation across hit rates, kruskal wallis: p = %.3f\n',pkw);
+% Is there a significant difference across false alarm rates?
+[pfa,~,stfa] = kruskalwallis(ALL_FA,TYPE,'off');
+fprintf('Variation across false alarm rates, kruskal wallis: p = %.3f\n',pfa);

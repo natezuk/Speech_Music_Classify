@@ -1,7 +1,7 @@
 % Rank the classification accuracies for each subject and determine if
 % there is a significant difference between them
 
-nsbj = 7;
+nsbj = 15;
 fl_prefix = 'StimClassLDA_';
 
 % Load the stimulus labels

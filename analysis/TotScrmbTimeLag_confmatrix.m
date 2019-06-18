@@ -2,9 +2,11 @@
 % the classification accuracy for each stimulus type as a function of time
 addpath('~/Documents/MATLAB/shadedErrorBar/');
 addpath('~/Documents/MATLAB/fdr_bh/');
+addpath('~/Documents/MATLAB/MCP/');
 
-nsbj = 7;
+nsbj = 15;
 fl_prefix = 'StimClassLDA_timelag_';
+nperm = 1000;
 
 % Load the stimulus labels
 scrmblbls;
@@ -86,6 +88,8 @@ clrs = {'b','r'};
 plt_leg = NaN(2,1);
 pval = NaN(length(t_iter),2);
 stats_rs = cell(length(t_iter),2);
+zval = NaN(length(t_iter),2);
+permzval = NaN(nperm,length(t_iter),2);
 for ii = 1:2,
     md_acc = median(allsbj_acc(:,replbl==ii),2);
     uq_acc = quantile(allsbj_acc(:,replbl==ii),0.75,2);
@@ -107,7 +111,19 @@ for ii = 1:2,
     % is the distribution of accuracies significantly different than the synth
     % distribution?
     for t = 1:length(t_iter),
-        [pval(t,ii),~,stats_rs{t,ii}] = ranksum(allsbj_acc(t,replbl==ii)',SYNTHall');
+        orig_acc = allsbj_acc(t,replbl==ii);
+        [pval(t,ii),~,stats_rs{t,ii}] = ranksum(orig_acc',SYNTHall);
+%         [pval(t,ii),~,stats_rs{t,ii}] = ranksum(allsbj_acc(t,replbl==ii)',allsbj_acc(t,replbl==ii+3)');
+        zval(t,ii) = stats_rs{t,ii}.zval;
+        combined_acc = [orig_acc'; SYNTHall];
+        % randomly permute the reconstruction accuracies
+        for n = 1:nperm,
+            idx = randperm(length(combined_acc));
+            nullvals = combined_acc(idx(1:length(orig_acc)));
+            nullcmp = combined_acc(idx(length(orig_acc)+1:end));
+            [~,~,stats_perm] = ranksum(nullvals,nullcmp);
+            permzval(n,t,ii) = stats_perm.zval;
+        end
     end
 end
 set(gca,'FontSize',16)
@@ -116,3 +132,12 @@ ylabel('Classification accuracy');
 legend(plt_leg,typenms(1:2));
 
 [h,pcrit] = fdr_bh(pval,0.001,'dep');
+
+% Compute a permuted distribution of z-values for each 
+chanlocs.X = 1;
+chanlocs.Y = 1;
+chanlocs.Z = 1;
+for ii = 1:2,
+    [clusters,bSum,clusters_corrected,pCluster]=...
+        MCP_clusters(zval(:,ii)',pval(:,ii)',permzval(:,:,ii),chanlocs);
+end
