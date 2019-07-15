@@ -1,6 +1,8 @@
 % Examine population behavioral responses for the Speech-Music
 % classification experiment
 
+addpath('~/Documents/Matlab/fdr_bh/');
+
 res_fld = '~/Projects/Speech_Music_Classify/behavior_results/';
 res_fls = what(res_fld);
 mats = res_fls.mat;

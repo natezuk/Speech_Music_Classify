@@ -4,7 +4,7 @@
 addpath(genpath('~/Documents/MATLAB/eeglab13_6_5b/functions'));
 addpath('~/Documents/Matlab/fdr_bh');
 
-nsbj = 7;
+nsbj = 15;
 fl_prefix = 'StimClassLDA_chan_';
 
 % Load the stimulus labels
@@ -45,18 +45,20 @@ replbl = repmat(typelbl,nsbj,1); % repeat stimulus labels across all subjects
 
 % Compute if the difference in classification accuracy is different for
 % original vs synth, channel by channel
-pval = NaN(nchan,2);
-stat_rs = cell(nchan,2);
-for ii = 1:2,
+pval = NaN(nchan,3);
+stat_rs = cell(nchan,3);
+for ii = 1:3,
     for n = 1:nchan,
         orig = allsbj_acc(n,replbl==ii);
         synth = allsbj_acc(n,replbl==ii+3);
         [pval(n,ii),stat_rs{n,ii}] = ranksum(orig,synth);
     end
 end    
-[h,pcrit] = fdr_bh(pval,0.01,'dep');
+[h001,pcrit] = fdr_bh(pval,0.001,'dep');
     % only one electrode is significant with q = 0.05 for speech (NZ,
     % 18-1-2019)
+[h01,~] = fdr_bh(pval,0.01,'dep');
+[h05,~] = fdr_bh(pval,0.05,'dep');
     
 % Plot a topography of the median accuracy for the original music, speech,
 % and impact sounds
@@ -64,21 +66,41 @@ figure
 for ii = 1:3,
     subplot(1,3,ii);
     md_acc = median(allsbj_acc(:,replbl==ii),2);
-    topoplot(md_acc,'chanlocs.xyz','style','map');
+    topoplot(md_acc,'chanlocs.xyz','style','map','conv','on');
     title(typenms{ii});
     colormap('jet');
-    caxis([0 0.13]);
+    set(gcf,'Position',[60 425 1100 250]);
+    caxis([0 0.15]);
     colorbar;
 end
 
-% % Plot topography for synth stimuli
-% figure
-% for ii = 1:3,
-%     subplot(1,3,ii);
-%     md_acc = median(allsbj_acc(:,replbl==ii+3),2);
-%     topoplot(md_acc,'chanlocs.xyz','style','map');
-%     title(typenms{ii+3});
-%     colormap('gray');
-%     caxis([0 0.13]);
-%     colorbar;
-% end
+% Plot topography for synth stimuli
+figure
+for ii = 1:3,
+    subplot(1,3,ii);
+    md_acc = median(allsbj_acc(:,replbl==ii+3),2);
+    topoplot(md_acc,'chanlocs.xyz','style','map','conv','on');
+    title(typenms{ii+3});
+    colormap('jet');
+    set(gcf,'Position',[60 425 1100 250]);
+    caxis([0 0.15]);
+    colorbar;
+end
+
+% Plot topography of channels that are significantly better than synth
+figure
+cmap = (0:1/3:1)'*ones(1,3); % manually create a color map with 3 possible values
+for ii = 1:3,
+    subplot(1,3,ii);
+    hold on
+    topoplot(h001(:,ii)+h01(:,ii)+h05(:,ii),'chanlocs.xyz','style','map','conv','on');
+%     colormap(cmap);
+%     topoplot(h05(:,ii),'chanlocs.xyz','style','map');
+%     topoplot(h01(:,ii),'chanlocs.xyz','style','map');
+%     topoplot(h001(:,ii),'chanlocs.xyz','style','map');
+    title(typenms{ii});
+    colormap(cmap);
+    set(gcf,'Position',[60 425 1100 250]);
+    caxis([0 3]);
+    colorbar;
+end

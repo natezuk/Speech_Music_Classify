@@ -38,7 +38,11 @@ if dopca,
     disp('Doing PCA...');
     pcatm = tic;
     [cf,sc,~,~,vexp] = pca(eegdata');
-    pcind = find(cumsum(vexp)>vexpthres,1,'first');
+    if vexpthres==100,
+        pcind = length(vexp); % use all components if vexpthres==100%
+    else
+        pcind = find(cumsum(vexp)>=vexpthres,1,'first');
+    end
     fprintf('%d dimensions retained\n',pcind);
     disp(['PCA completed @ ' num2str(toc(pcatm)) ' s']);
 else

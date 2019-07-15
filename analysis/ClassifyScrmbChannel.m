@@ -7,11 +7,12 @@ addpath(genpath('~/Documents/MATLAB/eeglab13_6_5b/functions'));
 
 eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/'; % contains eeg data
 stimpth = '/Volumes/Untitled/SpeechMusicClassify/stims/'; % contains labeling for the sound clips and the stimuli
-sbj = 'GQEVXE'; % subject name
-vexpthres = 95;
+sbj = 'ZLIDEI'; % subject name
+% vexpthres = 95;
+vexpthres = 100;
 eFs = 128;
-trange = 200; % range of times to include in the classifier (in ms)
-tstep = 100; % step size between time ranges (in ms)
+% trange = 200; % range of times to include in the classifier (in ms)
+% tstep = 100; % step size between time ranges (in ms)
 
 disp('Loading eeg data...');
 [eegs,stims] = loadscrmbclassdata(eegpth,sbj,stimpth);

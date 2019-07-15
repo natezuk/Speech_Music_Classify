@@ -61,7 +61,8 @@ for ii = 1:length(t_select),
     subplot(2,ceil(length(t_select)/2),ii);
     % plot the confusion matrix for that time range
     imagesc(mean(conf(:,:,tidx_use(ii),:),4));
-    colormap('gray');
+    cmap = colormap('gray');
+    colormap(flipud(cmap));
     caxis([0 0.1]); % set to a value that shows the effect of the diagonal, without being scaled by outliers
     tle = sprintf('%d - %d ms',round(t_select(ii)*1000),round(t_select(ii)*1000)+trange);
     axis('square');

@@ -8,7 +8,9 @@ addpath('~/Documents/MATLAB/spectrotemporal-synthesis-v2-master/Sound_Texture_Sy
 %    'norm_stim216_knuckle_cracking.wav',...
 %    'norm_stim399_walking_on_hard_surface.wav',...
 %    'norm_stim401_walking_with_heels.wav'};
-snd = 'synth_stim399_walking_on_hard_surface.wav';
+% snd = 'synth_stim399_walking_on_hard_surface.wav';
+% snd = 'synth_stim268_piano.wav';
+snd = 'synth_stim174_girl_speaking.wav';
 % snd = 'stim399_walking_on_hard_surface.wav';
 sndpth = '/Volumes/Untitled/TeohSpMus/OrigScrambExp/';
 

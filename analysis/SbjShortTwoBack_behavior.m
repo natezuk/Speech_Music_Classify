@@ -3,8 +3,8 @@
 
 addpath('~/Projects/Speech_Music_Classify/');
 
-sbj = 'HNJUPJ';
-date = '04-Jun-2019';
+sbj = 'HITXMV';
+date = '06-Jun-2019';
 % sbj_data = 'ShortClipTwoBack_res_sbjYMKSWS_09-May-2019';
 sbj_data = sprintf('ShortClipTwoBack_res_sbj%s_%s',sbj,date);
 behav_folder = '/Volumes/Untitled/SpeechMusicClassify/';
