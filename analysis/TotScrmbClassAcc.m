@@ -10,6 +10,8 @@ types = unique(typelbl);
 
 % Load classification rankings for each subject
 nstims = length(typelbl); % number of stimuli
+ntr = NaN(nsbj,1);
+ndim = NaN(nsbj,1); % number of dimensions retained
 acc = NaN(nstims,nsbj); % classification accuracies
 mrnk = NaN(nstims,nsbj); % classification rankings
 sbjs = cell(nsbj,1);
@@ -21,16 +23,25 @@ for m = 1:length(mats)
     maxlen = min([length(fl_prefix) length(mats{m})]);
     if strcmp(mats{m}(1:maxlen),fl_prefix) % make sure it's the appropriate results file
         r = load([resdir mats{m}]); % load the results file
+        ndim(m) = r.maxpc;
         sbjs{sbj_idx} = mats{m}(length(fl_prefix)+1:end); % get the subject tag
         conf = mean(r.conf,3); % average the confusion matrix across iterations
-        acc = diag(conf); % get the classification accuracy for each stimulus
-        [~,idx] = sort(acc); % sort accuracies
-        rnk = 1:length(acc); % assign ranks for each stimulus
+        acc(:,m) = diag(conf); % get the classification accuracy for each stimulus
+        [~,idx] = sort(acc(:,m)); % sort accuracies
+        rnk = 1:length(acc(:,m)); % assign ranks for each stimulus
         mrnk(idx,sbj_idx) = rnk; % save the rank for each stimulus
+        ntr(m) = length(r.lbl);
         disp(mats{m});
         sbj_idx = sbj_idx + 1;
     end
 end
+
+% Compute the 95% confidence threshold for correct classification
+ComputeTwoBack; % compute the two-back stimuli in order to determine how many trials were left out
+ntargets = sum(sum(tag_cliprep));
+ntest = round((ntr-ntargets)/4);
+thres = binoinv(0.95,ntest,1/nstims)./ntest;
+pass = acc>(ones(nstims,1)*thres'); % identify accuracies above this threshold
 
 % Run a kruskal wallis test, significant differences between stimulus
 % types?

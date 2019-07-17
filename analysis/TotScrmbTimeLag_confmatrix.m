@@ -17,6 +17,7 @@ ntm = 19; % number of time indexes
 % Load classification rankings for each subject
 nstims = length(typelbl); % number of stimuli
 acc = NaN(nstims,ntm,nsbj); % classification accuracies
+ndim = NaN(ntm,nsbj);
 conf = NaN(nstims,nstims,ntm,nsbj); % confusion matrices
 sbjs = cell(nsbj,1);
 resdir = '/Volumes/ZStore/SpeechMusicClassify/timelag/';
@@ -27,6 +28,7 @@ for m = 1:length(mats)
     maxlen = min([length(fl_prefix) length(mats{m})]);
     if strcmp(mats{m}(1:maxlen),fl_prefix) % make sure it's the appropriate results file
         r = load([resdir mats{m}]); % load the results file
+        ndim(:,m) = cell2mat(r.maxpc);
         sbjs{sbj_idx} = mats{m}(length(fl_prefix)+1:end); % get the subject tag
         conf(:,:,:,sbj_idx) = r.mn_conf; % get the confusion matrix as a function of time
         for n = 1:ntm, % for each time point,
