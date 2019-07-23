@@ -1,5 +1,6 @@
 % Rank the classification accuracies for each subject and determine if
 % there is a significant difference between them
+addpath('~/Projects/Speech_Music_Classify/');
 
 nsbj = 15;
 fl_prefix = 'StimClassLDA_';
@@ -63,7 +64,8 @@ for ii = 1:length(typenms),
     typeidx = typelbl==ii;
     newlbl(typeidx) = newlblvals(ii);
 end
-dot_median_plot(newlbl,mrnk);
+% dot_median_plot(newlbl,mrnk);
+dot_median_plot(repmat(newlbl,[nsbj 1]),RNK);
 [~,newnmidx] = sort(newlblvals);
 set(gca,'XTickLabel',typenms(newnmidx),'XTickLabelRotation',45);
 ylabel('Classification ranking');
