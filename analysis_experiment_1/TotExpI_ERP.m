@@ -1,27 +1,25 @@
-% Compute the evoked responses and GFP and determine if
-% there is a significant difference between stimuli in experiment II
-% (original and synthetic)
+% Compute the evoked responses and GFPs, and rank average GFPs (experiment I)
 % Nate Zuk (2019)
 
 addpath('~/Documents/Matlab/shadedErrorBar/');
+addpath(genpath('~/Documents/MATLAB/eeglab13_6_5b/functions'));
 
 % Load the stimulus labels
-scrmblbls;
+stimtypelbl;
 types = unique(typelbl);
 
 ntm = 256;
 nchan = 128;
 nstims = length(typelbl);
-nsbjs = 15;
 
 % Load classification rankings for each subject
-erps = NaN(ntm,nchan,nstims,nsbjs); % classification accuracies
-M = NaN(nsbjs,1);
-ST = NaN(nsbjs,1);
-av_gfp = NaN(nstims,nsbjs);
-rnk_gfp = NaN(nstims,nsbjs);
-sbjs = cell(nsbjs,1);
-resdir = '/Volumes/ZStore/SpeechMusicClassify/erps_exp2/';
+erps = NaN(ntm,nchan,nstims,6); % classification accuracies
+M = NaN(6,1);
+ST = NaN(6,1);
+av_gfp = NaN(nstims,6);
+rnk_gfp = NaN(nstims,6);
+sbjs = cell(6,1);
+resdir = '/Volumes/ZStore/TeohStimClass/SbjResults/erps_exp1/';
 fls = what(resdir);
 mats = fls.mat; % subject results
 for m = 1:length(mats)
@@ -45,8 +43,9 @@ for m = 1:length(mats)
 end
 
 % Plot ERPs, averaged across stimulus types
-typenms = {'Music','Speech','Impact','Synth Music','Synth Speech','Synth Impact'};
-reptype = repmat(typelbl,[1 nsbjs]);
+typenms = {'Environmental','Mechanical','Music','Non-speech vocal','Non-vocal human',...
+    'Speech','Animal'};
+reptype = repmat(typelbl,[1 6]);
 reptype = reshape(reptype,[numel(reptype) 1]);
 ERPS = reshape(erps,[ntm nchan nstims*length(sbjs)]);
 figure
@@ -93,6 +92,7 @@ for ii = 1:length(typenms),
 %     av_gfp_plt(ii) = plt.mainLine; % get the handle for the main line
     plt = plot(tm,md_gfp,'LineWidth',2,'Color',cmap(clr_idx,:));
     av_gfp_plt(ii) = plt(1);
+%     sterp = squeeze(std(ERPS(:,:,typechk),[],2));
 end
 set(gcf,'Position',[50 300 750 375]);
 set(gca,'FontSize',16);
@@ -130,6 +130,46 @@ colorbar;
 % ylabel('Global field power');
 % legend(gfpmn_plt,typenms);
 
+% % All mean ERPs for all stimuli
+% figure
+% hold on
+% cmap = colormap('jet');
+% av_erp_plt = NaN(length(typenms),1);
+% for ii = 1:length(typenms),
+%     clr_idx = floor((ii-1)/length(typenms)*64)+1;
+%     typechk = typelbl==ii; % identify stimuli that are of the correct type,
+%         % in the listing of classifiction ranking
+%     % plot all bars, but set the bars that aren't the correct stimuli to 0
+%     merp = mean(erps(:,:,typechk,:),2);
+%     plt = plot(tm,squeeze(mean(merp,4)),'LineWidth',1.5,'Color',cmap(clr_idx,:));
+%     av_erp_plt(ii) = plt(1); % get the handle for the main line
+% end
+% set(gcf,'Position',[180 370 615 310]);
+% set(gca,'FontSize',16);
+% xlabel('Time (s)');
+% ylabel('ERP averaged across channels');
+% legend(av_erp_plt,typenms);
+% 
+% % All GFPs for all stimuli
+% figure
+% hold on
+% cmap = colormap('jet');
+% av_erp_plt = NaN(length(typenms),1);
+% for ii = 1:length(typenms),
+%     clr_idx = floor((ii-1)/length(typenms)*64)+1;
+%     typechk = typelbl==ii; % identify stimuli that are of the correct type,
+%         % in the listing of classifiction ranking
+%     % plot all bars, but set the bars that aren't the correct stimuli to 0
+%     sterp = std(erps(:,:,typechk,:),[],2);
+%     plt = plot(tm,squeeze(mean(sterp,4)),'LineWidth',1.5,'Color',cmap(clr_idx,:));
+%     av_erp_plt(ii) = plt(1); % get the handle for the main line
+% end
+% set(gcf,'Position',[180 370 615 310]);
+% set(gca,'FontSize',16);
+% xlabel('Time (s)');
+% ylabel('ERP averaged across channels');
+% legend(av_erp_plt,typenms);
+
 % Determine if there is a significant difference in stimuli when ranked by
 % average GFP
 RNK = reshape(rnk_gfp,[numel(reptype) 1]);
@@ -137,24 +177,9 @@ RNK = reshape(rnk_gfp,[numel(reptype) 1]);
 set(gca,'XTickLabel',typenms,'XTickLabelRotation',45);
 % [pMW,MW] = mannwhitneycmp(RNK,reptype);
 figure
-cmp = multcompare(stats);
+cmp = multcompare(stats,'ctype','dunn-sidak');
 % Plot rankings as individual dots
-newlbl = NaN(length(reptype),1); % use a new labeling that puts original next to scrambled
-newlblvals = [1 3 5 2 4 6];
-for ii = 1:length(typenms),
-    typeidx = reptype==ii;
-    newlbl(typeidx) = newlblvals(ii);
-end
-dot_median_plot(newlbl,RNK);
-[~,newnmidx] = sort(newlblvals);
+dot_median_plot(reptype,RNK);
 set(gcf,'Position',[600 275 750 420]);
-set(gca,'XTickLabel',typenms(newnmidx),'XTickLabelRotation',45,'FontSize',16);
+set(gca,'XTickLabel',typenms,'XTickLabelRotation',45,'FontSize',16);
 ylabel('Global field power ranking');
-
-% Determine if the rankings for speech are significantly reduced in the
-% scrambled version
-prs = NaN(3,1);
-strs = cell(3,1);
-for ii = 1:3,
-    [prs(ii),~,strs{ii}] = ranksum(RNK(reptype==ii),RNK(reptype==ii+3));
-end

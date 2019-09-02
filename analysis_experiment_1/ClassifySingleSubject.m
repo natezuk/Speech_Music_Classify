@@ -1,17 +1,16 @@
-% Load the subject data for EEG responses to various times of sounds, 
-% and create a classifier to classify each of the different
+% Load the subject data for EEG responses to various times of sounds (ET
+% experiment), and create a classifier to classify each of the different
 % types of sounds
 % (NZ, 4/12/2018)
 
-eegpth = 'A:\SpeechMusicClassify\eegs\'; % contains eeg data
-stimpth = 'A:\SpeechMusicClassify\stims\'; % contains labeling for the sound clips and the stimuli
-sbj = 'HGWLOI'; % subject name
+eegpth = '/Volumes/Untitled/TeohSpMus/Preprocessed/'; % contains Teoh's eeg data
+sbj = 'JOS_1_45'; % subject name
 vexpthres = 95;
 eFs = 128;
 % maxdur = 1; % maximum duration (in s)
 
 disp('Loading eeg data...');
-[eegs,stims] = loadscrmbclassdata(eegpth,sbj,stimpth);
+[eegs,stims] = loadstimclassdata(eegpth,sbj);
 % Reduce the eeg duration
 % eegs = eegs(1:maxdur*eFs,:,:,:);
 
@@ -129,7 +128,7 @@ ylabel('Predicted');
 % end
 
 % Save the results
-disp('Saving results...');
-respth = 'C:\Users\nzuk\Data\TeohStimClass\SbjResults\';
-resfl = sprintf('StimClassLDA_%s',sbj);
-save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres');
+% disp('Saving results...');
+% respth = '/Volumes/ZStore/TeohStimClass/SbjResults/';
+% resfl = sprintf('StimClassLDA_%s',sbj);
+% save([respth resfl],'conf','sc','maxpc','mu','lbl','vexpthres');

@@ -1,5 +1,6 @@
 % Examine population behavioral responses for the Speech-Music
-% classification experiment
+% classification experiment (experiment II)
+% Nate Zuk (2019)
 
 addpath('~/Documents/Matlab/fdr_bh/');
 
@@ -49,3 +50,10 @@ fprintf('Variation across hit rates, kruskal wallis: p = %.3f\n',pkw);
 % Is there a significant difference across false alarm rates?
 [pfa,~,stfa] = kruskalwallis(ALL_FA,TYPE,'off');
 fprintf('Variation across false alarm rates, kruskal wallis: p = %.3f\n',pfa);
+
+% Compare originals to model-matched
+p_cmp = NaN(3,1);
+st_cmp = cell(3,1);
+for n = 1:3,
+    [p_cmp(n),~,st_cmp{n}] = ranksum(ALL_CORR(TYPE==n),ALL_CORR(TYPE==n+3));
+end

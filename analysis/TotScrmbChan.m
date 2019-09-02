@@ -1,8 +1,10 @@
 % Examine the classification accuracy for each channel, and plot using
 % topoplot
+% Nate Zuk (2019)
 
 addpath(genpath('~/Documents/MATLAB/eeglab13_6_5b/functions'));
 addpath('~/Documents/Matlab/fdr_bh');
+addpath('~/Projects/Speech_Music_Classify/');
 
 nsbj = 15;
 fl_prefix = 'StimClassLDA_chan_';
@@ -14,6 +16,7 @@ types = unique(typelbl);
 nchan = 128; % number of time indexes
 
 % Load classification rankings for each subject
+ntr = NaN(nsbj,1);
 nstims = length(typelbl); % number of stimuli
 acc = NaN(nstims,nchan,nsbj); % classification accuracies
 sbjs = cell(nsbj,1);
@@ -30,6 +33,7 @@ for m = 1:length(mats)
         for n = 1:nchan, % for each time point,
             acc(:,n,sbj_idx) = diag(conf(:,:,n)); % get the classification accuracies for the stimuli
         end
+        ntr(m) = length(r.lbl);
         disp(mats{m});
         sbj_idx = sbj_idx + 1;
     end
@@ -42,6 +46,35 @@ allsbj_acc = reshape(acc,size(acc,1),size(acc,2)*size(acc,3));
 
 replbl = repmat(typelbl,nsbj,1); % repeat stimulus labels across all subjects
     % to appropriately label the stimuli in allsbj_acc
+    
+% Identify channels where the average classification accuracy across all
+% stimuli and subjects is above chance (p < 0.001)
+ComputeTwoBack; % compute the two-back stimuli in order to determine how many trials were left out
+ntargets = sum(sum(tag_cliprep));
+ntest = round((ntr-ntargets)/4);
+thres = binoinv(0.999,ntest,1/nstims)./ntest;
+pass = allsbj_acc>mean(thres);
+
+% Identify the 10 channels that pass significance for the most number of stimuli/subjects
+[npass,idx] = sort(sum(pass,2),'descend');
+use_chans = false(length(idx),1);
+use_chans(idx(1:20)) = true;
+cmap = [0 1]'*ones(1,3);
+figure
+set(gcf,'Position',[60 425 1100 250]);
+topoplot(use_chans,'chanlocs.xyz','style','map','conv','on');
+colormap(flipud(cmap));
+caxis([0 1]);
+title('Channels included for significance testing');
+
+% Test for significant difference in average classification for those channels
+pdiff = NaN(3,1);
+stat_diff = cell(3,1);
+for ii = 1:3,
+    orig_acc = mean(allsbj_acc(use_chans,replbl==ii),1);
+    synth_acc = mean(allsbj_acc(use_chans,replbl==ii+3),1);
+    [pdiff(ii),~,stat_diff{ii}] = ranksum(orig_acc',synth_acc');
+end
 
 % Compute if the difference in classification accuracy is different for
 % original vs synth, channel by channel

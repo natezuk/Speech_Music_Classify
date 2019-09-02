@@ -1,6 +1,7 @@
 % Class labels for the original/scrambled stimuli (NZ experiment)
 % 1 = Music; 2 = Speech; 3 = Onset-like
 % 4, 5, 6 are scrambled versions of the other categories, respectively
+% Nate Zuk (2019)
 
 typelbl = [2;... % girl speaking
     3;... % knuckle cracking

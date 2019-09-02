@@ -1,8 +1,10 @@
 % Examine how the confusion matrices change as a function of time, and plot
 % the classification accuracy for each stimulus type as a function of time
+% Nate Zuk (2019)
 addpath('~/Documents/MATLAB/shadedErrorBar/');
 addpath('~/Documents/MATLAB/fdr_bh/');
 addpath('~/Documents/MATLAB/MCP/');
+addpath('~/Projects/Speech_Music_Classify/');
 
 nsbj = 15;
 fl_prefix = 'StimClassLDA_timelag_';
@@ -16,6 +18,7 @@ ntm = 19; % number of time indexes
 
 % Load classification rankings for each subject
 nstims = length(typelbl); % number of stimuli
+ntr = NaN(nsbj,1);
 acc = NaN(nstims,ntm,nsbj); % classification accuracies
 ndim = NaN(ntm,nsbj);
 conf = NaN(nstims,nstims,ntm,nsbj); % confusion matrices
@@ -34,6 +37,7 @@ for m = 1:length(mats)
         for n = 1:ntm, % for each time point,
             acc(:,n,sbj_idx) = diag(conf(:,:,n,sbj_idx)); % get the classification accuracies for the stimuli
         end
+        ntr(m) = length(r.lbl);
         disp(mats{m});
         sbj_idx = sbj_idx + 1;
     end
@@ -42,6 +46,10 @@ end
 % Get the time array 
 t_iter = r.t_iter;
 trange = r.trange;
+
+ComputeTwoBack; % compute the two-back stimuli in order to determine how many trials were left out
+ntargets = sum(sum(tag_cliprep));
+ntest = round((ntr-ntargets)/4);
 
 % Show the distribution of all accuracies, averaged across subjects
 C = mean(conf,4);
@@ -54,6 +62,47 @@ cnts = bins(1:end-1)+diff(bins)/2;
 bar(cnts,h,1,'k');
 xlabel('Classification accuracy');
 ylabel('# predicted-actual pairs');
+
+% Compute the distribution of off-diagonal classification accuracies
+L = NaN(size(C,1)*size(C,2),ntm);
+for ii = 1:ntm,
+    l = tril(C(:,:,ii),-1); % get off-diagonal lower triangular part of confusion matrix
+    l(l==0) = NaN; % set all other values to NaN
+    L(:,ii) = reshape(l,[numel(l) 1]);
+end
+% get rows with NaN values, which correspond to indexes not in the lower
+% triangular matrix
+has_nan = sum(isnan(L),2)>0;
+L = L(~has_nan,:); % remove those rows
+bins = 0:0.001:max(max(L))+0.001;
+h_offdiag = NaN(length(bins)-1,ntm);
+for ii = 1:ntm, h_offdiag(:,ii) = histcounts(L(:,ii),bins); end
+figure
+cnts = bins(1:end-1)+diff(bins)/2;
+plot(cnts,h_offdiag/size(L,1));
+xlabel('Off-diagonal classification accuracy');
+ylabel('# predicted-actual pairs');
+
+% Test off-diagonal values
+% 1) Determine if the median is worse than chance
+p_med_cmp = NaN(ntm,1);
+z_med_cmp = NaN(ntm,1);
+for ii = 1:ntm,
+    [p_med_cmp(ii),~,st] = signrank(L(:,ii),1/30);
+    z_med_cmp(ii) = st.zval;
+end
+% 2) For each time point, create a binomial distribution centered on the
+% average classification accuracy, and use a one-sample KS test to
+% determine if it's significantly different than the binomial distribution
+pks = NaN(ntm,1);
+ks = NaN(ntm,1);
+center_of_L = mean(mean(L));
+L_int = round(L*ntest(1)); % all of the values of ntest are the same
+range_of_L = floor(min(min(L_int)))-1:ceil(max(max(L_int)))+1;
+exp_cdf = binocdf(range_of_L,ntest(1),center_of_L);
+for ii = 1:ntm,
+    [~,pks(ii),ks(ii)] = kstest(L(:,ii),[range_of_L'/ntest(1) exp_cdf']);
+end
 
 % Plot the confusion matrices for select time points
 tidx_use = 1:2:length(t_iter);
@@ -75,20 +124,27 @@ end
 colorbar;
 
 typenms = {'Music','Speech','Impact','Synth Music','Synth Speech','Synth Impact'};
+% skip_stims = 12; % if skipping cartoon effects
 acc = permute(acc,[2,1,3]);
-allsbj_acc = reshape(acc,size(acc,1),size(acc,2)*size(acc,3));
+% remove stimuli that should be skipped
+% acc_skip = acc(:,setxor(1:nstims,skip_stims),:);
+allsbj_acc = reshape(acc_skip,size(acc_skip,1),size(acc_skip,2)*size(acc_skip,3));
+% allsbj_acc = reshape(acc,size(acc,1),size(acc,2)*size(acc,3));
 % allsbj_acc = reshape(z_acc,size(z_acc,1),size(z_acc,2)*size(z_acc,3));
 
-replbl = repmat(typelbl,nsbj,1); % repeat stimulus labels across all subjects
+% typelbl_skip = typelbl(setxor(1:nstims,skip_stims));
+replbl = repmat(typelbl_skip,nsbj,1);
+% replbl = repmat(typelbl,nsbj,1); % repeat stimulus labels across all subjects
     % to appropriately label the stimuli in allsbj_acc
     
 % Plot the median accuracy for the original speech and music as a function of time, and
 % compare to the median accuracy for synth music & synth speech across all
 % time
 figure
+set(gcf,'Position',[200,320,775,375]);
 hold on
 clrs = {'b','r'};
-plt_leg = NaN(2,1);
+plt_leg = NaN(3,1);
 pval = NaN(length(t_iter),2);
 stats_rs = cell(length(t_iter),2);
 zval = NaN(length(t_iter),2);
@@ -129,10 +185,17 @@ for ii = 1:2,
         end
     end
 end
+% Plot the interquartile range of the off-diagonal accuracies
+md_offdiag = median(L);
+uq_offdiag = quantile(L,0.75);
+lq_offdiag = quantile(L,0.25);
+plt = shadedErrorBar(t_iter*1000+trange/2,md_offdiag',[uq_offdiag-md_offdiag; md_offdiag-lq_offdiag]',...
+    'lineprops',{'-','Color','k','LineWidth',1});
+plt_leg(3) = plt.mainLine;
 set(gca,'FontSize',16)
 xlabel('Time (ms)');
 ylabel('Classification accuracy');
-legend(plt_leg,typenms(1:2));
+legend(plt_leg,[typenms(1:2) {'False positive'}]);
 
 [h,pcrit] = fdr_bh(pval,0.001,'dep');
 

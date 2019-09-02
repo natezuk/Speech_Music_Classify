@@ -1,6 +1,6 @@
 function [conf,cf,sc,pcind,mu,ntst] = spmusdiscrimlda(eegdata,lbl,stim,varargin)
-% Perform PCA to reduce the dimensionality of the data, then run
-% multi-class LDA.
+% Perform PCA to reduce the dimensionality of the EEG data, then run
+% LDA to compute a speech/music discriminant
 % Inputs:
 % - eegdata = eeg data, timeXchannel by trialsXstims. If any columns of
 % eegdata are NaN, they are removed.
@@ -14,6 +14,7 @@ function [conf,cf,sc,pcind,mu,ntst] = spmusdiscrimlda(eegdata,lbl,stim,varargin)
 % - cf = transformation matrix calculated by PCA
 % - sc = score matrix calculated by PCA
 % - pcind = maximum PC to include in the classifier
+% Nate Zuk (2019)
 
 % Initial variables
 vexpthres = 95; % retain PCA components that explain the data variance up to this threshold (in percent)

@@ -3,6 +3,7 @@ function [pMW,MW,cond] = mannwhitneycmp(obsv,lbl)
 % data obtained from the obsv matrix.  If obsv is a matrix, each column 
 % is a separate condition, and each row an observation. If obsv is a
 % vector, the groups must be labeled with the vector lbl.
+% Nate Zuk (2019)
 
 if nargin==1,
     ncond = size(obsv,2); % # of conditions

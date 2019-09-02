@@ -1,6 +1,5 @@
 % Rank the classification accuracies for each subject and determine if
 % there is a significant difference between them
-% addpath('C:\Users\nzuk\Projects\ITDSweep\PsychPhys_fullresults\Analysis\');
 nsbj = 7;
 
 % Load the stimulus labels

@@ -1,5 +1,6 @@
 % Check for the number of channels removed for each subject in
 % SpeechMusicClassify
+% Nate Zuk (2019)
 
 eegpth = '/Volumes/Untitled/SpeechMusicClassify/eegs/';
 
