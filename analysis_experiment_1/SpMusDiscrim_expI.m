@@ -1,6 +1,5 @@
 % Load the subject data for EEG responses to various times of sounds (ET
-% experiment), and create a classifier to classify each of the different
-% types of sounds
+% experiment), and create a classifier to discriminate speech and music
 % (NZ, 4/12/2018)
 
 eegpth = '/Volumes/Untitled/TeohSpMus/Preprocessed/'; % contains Teoh's eeg data
