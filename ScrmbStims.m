@@ -1,8 +1,8 @@
 % Compute the statistics of each sound from TeohSpMus
 
-sndpth = 'A:\TeohSpMus\OrigScrambExp\';
-dwnsmpth = 'C:\Users\nzuk\Data\TeohStimClass\dwnsmp\';
-scrmbpth = 'C:\Users\nzuk\Data\TeohStimClass\synths\';
+sndpth = '/Volumes/Untitled/TeohSpMus/OrigScrambExp/origstim/';
+dwnsmpth = '/Volumes/Untitled/TeohSpMus/test_synth/dwnsmp/';
+scrmbpth = '/Volumes/Untitled/TeohSpMus/test_synth/synth/';
 fls = dir(sndpth);
 % quilt_wnd = 40; % quilt window, in ms
 % expFs = 20000;
@@ -39,18 +39,6 @@ for n = 1:length(fls),
 % 
         % Compute the statistics
         synth = run_synthesis(P);
-
-%         P.filt_density = 1; %1 for regular filterbank, 2 for 4x overcomplete
-%         P.N_audio_channel = 30;
-%         P.audio_low_lim_Hz = 20;
-%         P.audio_high_lim_Hz = 10000;
-%         P.audio_sr = expFs;
-
-%         % Quilt the stimulus
-%         sy = generate_quilt(y,quilt_wnd,1,dur-1,P);
-%         
-%         % Save the sound 
-%         audiowrite([sndfl '_scrmb.wav'],y,expFs);
         
         disp(sndfl);
         keyboard;

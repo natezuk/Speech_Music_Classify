@@ -1,6 +1,7 @@
 % Plot spectrogram for one of the 2-second sounds from the classification
 % experiment
-addpath('~/Documents/MATLAB/spectrotemporal-synthesis-v2-master/Sound_Texture_Synthesis_Toolbox/');
+% addpath('~/Documents/MATLAB/spectrotemporal-synthesis-v2-master/Sound_Texture_Synthesis_Toolbox/');
+addpath('~/Documents/Matlab/Sound_Texture_Synthesis_Toolbox');
 
 % usedsnds = {'stim80_chopping_food.wav','stim399_walking_on_hard_surface.wav'};
 % sndsfromexperiment = {'norm_stim81_chopping_wood.wav',...
@@ -8,9 +9,9 @@ addpath('~/Documents/MATLAB/spectrotemporal-synthesis-v2-master/Sound_Texture_Sy
 %    'norm_stim216_knuckle_cracking.wav',...
 %    'norm_stim399_walking_on_hard_surface.wav',...
 %    'norm_stim401_walking_with_heels.wav'};
-% snd = 'synth_stim399_walking_on_hard_surface.wav';
+snd = 'synth_stim399_walking_on_hard_surface.wav';
 % snd = 'synth_stim268_piano.wav';
-snd = 'synth_stim174_girl_speaking.wav';
+% snd = 'synth_stim174_girl_speaking.wav';
 % snd = 'stim399_walking_on_hard_surface.wav';
 sndpth = '/Volumes/Untitled/TeohSpMus/OrigScrambExp/';
 
@@ -34,8 +35,9 @@ subband_envs(subband_envs<0)=0;
 % Plot the cochleogram
 t = (0.5:size(subband_envs,1)-0.5)/400;
 figure
-cmap = colormap('gray');
-colormap(flipud(cmap)); % plot as in McDermott & Simoncelli, with black for higher 
+% cmap = colormap('gray');
+cmap = colormap('jet');
+% colormap(flipud(cmap)); % plot as in McDermott & Simoncelli, with black for higher 
     % magnitude and white for lower magnitude
 imagesc(t,1:length(audio_cutoffs_Hz)-2,subband_envs(:,2:end-1)');
 axis('xy');

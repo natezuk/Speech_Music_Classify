@@ -42,7 +42,7 @@ end
 ComputeTwoBack; % compute the two-back stimuli in order to determine how many trials were left out
 ntargets = sum(sum(tag_cliprep));
 ntest = round((ntr-ntargets)/4);
-thres = binoinv(0.95,ntest,1/nstims)./ntest;
+thres = binoinv(0.999,ntest,1/nstims)./ntest;
 pass = acc>(ones(nstims,1)*thres'); % identify accuracies above this threshold
 
 % Run a kruskal wallis test, significant differences between stimulus
@@ -78,3 +78,28 @@ strs = cell(3,1);
 for ii = 1:3,
     [prs(ii),~,strs{ii}] = ranksum(RNK(reptype==ii),RNK(reptype==ii+3));
 end
+
+% Quantify if the difference in medians between original and model-matched
+% is significant using bootstrapping (NZ, 12/2019)
+nboot = 1000;
+md_diff_boot = NaN(nboot,3); % to store the difference between medians
+for ii = 1:3 % for each stimulus type
+    idx_orig = find(reptype==ii); % get the indexes for the originals
+    idx_mm = find(reptype==ii+3); % get the indexes for the model-matched
+    for n = 1:nboot
+        % randomly sample indexes from original and model-matched
+        rsmp_orig = randi(length(idx_orig),length(idx_orig),1);
+        rsmp_mm = randi(length(idx_mm),length(idx_mm),1);
+        % get the medians
+        md_rsmp_orig = median(RNK(idx_orig(rsmp_orig)));
+        md_rsmp_mm = median(RNK(idx_mm(rsmp_mm)));
+        % compute and store the difference
+        md_diff_boot(n,ii) = md_rsmp_orig-md_rsmp_mm;
+    end
+end
+% Compute the % of times, over each iteration, that impact difference is
+% greater than or equal to the difference for music or speech
+p_diff_mus = sum(md_diff_boot(:,1)<=md_diff_boot(:,3))/nboot;
+p_diff_sp = sum(md_diff_boot(:,2)<=md_diff_boot(:,3))/nboot;
+fprintf('Median diff for music <= impact? p = %.3f\n',p_diff_mus);
+fprintf('Median diff for speech <= impact? p = %.3f\n',p_diff_sp);

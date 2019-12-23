@@ -4,7 +4,7 @@
 % (NZ, 4/12/2018)
 
 eegpth = '/Volumes/Untitled/TeohSpMus/Preprocessed/'; % contains Teoh's eeg data
-sbj = 'JOS_1_45'; % subject name
+sbj = 'MO_1_45'; % subject name
 vexpthres = 95;
 eFs = 128;
 % maxdur = 1; % maximum duration (in s)

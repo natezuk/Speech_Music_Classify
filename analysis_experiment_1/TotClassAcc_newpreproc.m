@@ -5,7 +5,7 @@
 % Load the stimulus labels
 stimtypelbl;
 types = unique(typelbl);
-nsbj = 5;
+nsbj = 6;
 
 % Load classification rankings for each subject
 nstims = length(typelbl); % number of stimuli
@@ -14,7 +14,7 @@ acc = NaN(nstims,nsbj); % classification accuracies
 mrnk = NaN(nstims,nsbj); % classification rankings
 ntr = NaN(nsbj,1);
 sbjs = cell(nsbj,1);
-resdir = '/Volumes/ZStore/TeohStimClass/SbjResults/';
+resdir = '/Volumes/ZStore/NaturalSounds/SbjResults/';
 fls = what(resdir);
 mats = fls.mat; % subject results
 for m = 1:length(mats)
@@ -34,7 +34,7 @@ end
 
 % Compute the 95% confidence threshold for correct classification
 ntest = round(ntr/4);
-thres = binoinv(0.95,ntest,1/nstims)./ntest;
+thres = binoinv(0.999,ntest,1/nstims)./ntest;
 pass = acc>(ones(nstims,1)*thres'); % identify accuracies above this threshold
 
 % Run a kruskal wallis test, significant differences between stimulus
@@ -52,7 +52,7 @@ cmp = multcompare(stats,'ctype','dunn-sidak');
 % Plot rankings as individual dots
 % dot_median_plot(typelbl,mrnk);
 dot_median_plot(reptype,RNK);
-set(gcf,'Position',[50 300 370 240]);
+set(gcf,'Position',[360,300,695,380]);
 set(gca,'XTickLabel',typenms,'XTickLabelRotation',45);
 ylabel('Classification ranking');
 
@@ -73,7 +73,7 @@ for ii = 1:length(typenms),
     h(typechk) = sort_rnk(typechk);
     bar(ordered_idx,h,'FaceColor',cmap(clr_idx,:));
 end
-set(gcf,'Position',[50 300 265 440]);
+set(gcf,'Position',[360,60,785,550]);
 set(gca,'FontSize',16,'XTick',1:length(sort_rnk),'XTickLabel',stims(sortstim_idx),...
     'XTickLabelRotation',90,'TickLabelInterpreter','none');
 ylabel('Average classification ranking');
