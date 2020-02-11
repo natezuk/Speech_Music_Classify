@@ -11,4 +11,4 @@ All analysis code for Experiment 1 was run on data collected and preprocessed by
 
 Please cite this paper when using the code:
 
->Zuk, NJ, Teoh, ES, Lalor, EC (2020). EEG-based classification of natural sounds reveals specialized responses to speech and music, *NeuroImage*, 210:116558. doi: [10.1016/j.neuroimage.2020.116558](https://www.sciencedirect.com/science/article/pii/S1053811920300458)"
+>Zuk, NJ, Teoh, ES, Lalor, EC (2020). EEG-based classification of natural sounds reveals specialized responses to speech and music, *NeuroImage*, 210:116558. doi: [10.1016/j.neuroimage.2020.116558](https://www.sciencedirect.com/science/article/pii/S1053811920300458)
