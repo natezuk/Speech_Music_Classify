@@ -8,3 +8,7 @@ We will determine how well each of these sounds can be classified using multicla
 
 (2-9-2019)
 All analysis code for Experiment 1 was run on data collected and preprocessed by Emily Teoh.  Experiment 2 was inspired by the result from Teoh's experiment, where subjects listened to various natural sounds, including speech and music.  We found that, using multi-class LDA, speech, music, and impact sounds were classified better than all other natural sounds.
+
+Please cite this paper when using the code:
+
+>Zuk, NJ, Teoh, ES, Lalor, EC (2020). EEG-based classification of natural sounds reveals specialized responses to speech and music, *NeuroImage*, 210:116558. doi: [10.1016/j.neuroimage.2020.116558](https://www.sciencedirect.com/science/article/pii/S1053811920300458)"
